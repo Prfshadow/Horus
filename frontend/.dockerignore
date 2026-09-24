@@ -1,0 +1,11 @@
+# Keep the build context lean (node_modules are reinstalled in the image).
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vscode/

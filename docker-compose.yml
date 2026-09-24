@@ -1,0 +1,46 @@
+# HORUS — full stack (backend API + frontend UI).
+#
+# Usage:
+#   docker compose up --build        # frontend → http://localhost:8080
+#   docker compose up --build -d     # detached
+#   docker compose down              # stop (data persists in the volume)
+#
+# Configuration: image defaults apply; backend/.env (optional, gitignored)
+# overrides them — e.g. AI_PROVIDER=groq + AI_GROQ_API_KEY for AI features.
+# The SQLite database persists in the `horus-data` volume (/data/horus.db).
+# Point DATABASE_URL at PostgreSQL instead to switch databases (no code change).
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: horus-backend:latest
+    container_name: horus-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000" # direct API + FastAPI docs (:8000/docs)
+    volumes:
+      - horus-data:/data
+    env_file:
+      - path: ./backend/.env
+        required: false
+    # NOTE: no `environment:` block on purpose — explicit entries would
+    # override backend/.env. Image ENV provides the container defaults.
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: horus-frontend:latest
+    container_name: horus-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80" # the app (nginx proxies /api/* to backend)
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  horus-data:
+    name: horus-data

@@ -1,0 +1,501 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   HORUS Global Design Tokens — Single source of truth for
+   colors, typography, spacing, and effects across landing
+   and console experiences.
+   ============================================================ */
+
+:root {
+  /* Colors — Teal/cyan accent on deep slate */
+  --hz-bg-0: #04090b;
+  --hz-bg-1: #061013;
+  --hz-bg-2: #08181b;
+  --hz-ink: #e9f5f2;
+  --hz-ink-2: rgba(233, 245, 242, 0.72);
+  --hz-ink-3: rgba(233, 245, 242, 0.55);
+  --hz-line: rgba(160, 220, 205, 0.14);
+  --hz-line-strong: rgba(120, 230, 195, 0.35);
+  --hz-accent: #4ce0b6;
+  --hz-accent-dim: rgba(76, 224, 182, 0.15);
+  --hz-amber: #e5b04c;
+  --hz-danger: #ff9d85;
+
+  /* Typography — Michroma display, Space Grotesk body, JetBrains Mono data */
+  --hz-font-display: "Michroma", "Space Grotesk", sans-serif;
+  --hz-font-body: "Space Grotesk", "Segoe UI", sans-serif;
+  --hz-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* Motion */
+  --hz-ease: cubic-bezier(0.22, 0.8, 0.3, 1);
+  --hz-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --hz-header-h: 56px;
+  --hz-status-h: 38px;
+  --hz-radius-sm: 8px;
+  --hz-radius-md: 10px;
+  --hz-radius-lg: 12px;
+  --hz-radius-xl: 16px;
+
+  /* Shadows */
+  --hz-shadow-sm: 0 4px 12px -6px rgba(0, 0, 0, 0.6);
+  --hz-shadow-md: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --hz-shadow-lg: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+  --hz-shadow-glow: 0 0 24px -4px rgba(76, 224, 182, 0.35);
+}
+
+* {
+  border-color: var(--hz-line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: var(--hz-font-body);
+  background-color: var(--hz-bg-0);
+  color: var(--hz-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(76, 224, 182, 0.3);
+}
+
+/* Focus visible — consistent across all pages */
+:focus-visible {
+  outline: 2px solid var(--hz-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Global typography utilities
+   ============================================================ */
+
+.hz-font-display {
+  font-family: var(--hz-font-display);
+}
+
+.hz-font-body {
+  font-family: var(--hz-font-body);
+}
+
+.hz-font-mono {
+  font-family: var(--hz-font-mono);
+}
+
+/* Page title — large display */
+.hz-page-title {
+  font-family: var(--hz-font-display);
+  font-weight: 400;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  letter-spacing: 0.14em;
+  color: var(--hz-ink);
+  text-shadow: 0 0 28px rgba(76, 224, 182, 0.18);
+}
+
+/* Section title — medium display */
+.hz-section-title {
+  font-family: var(--hz-font-display);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+  letter-spacing: 0.1em;
+  color: var(--hz-ink);
+}
+
+/* Kicker / label — mono uppercase */
+.hz-kicker {
+  font-family: var(--hz-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--hz-accent);
+}
+
+/* Body text */
+.hz-body {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--hz-ink-2);
+}
+
+/* Small body / meta */
+.hz-body-sm {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--hz-ink-3);
+}
+
+/* Data / metric values */
+.hz-data {
+  font-family: var(--hz-font-mono);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--hz-ink);
+}
+
+.hz-data-sm {
+  font-family: var(--hz-font-mono);
+  font-size: 1.125rem;
+  line-height: 1.2;
+  color: var(--hz-accent);
+}
+
+/* ============================================================
+   Global glass surface
+   ============================================================ */
+
+.hz-glass {
+  background: rgba(8, 18, 20, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid var(--hz-line);
+  border-radius: var(--hz-radius-lg);
+  box-shadow:
+    var(--hz-shadow-md),
+    inset 0 1px 0 rgba(233, 245, 242, 0.05);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hz-glass {
+    background: rgba(6, 13, 14, 0.94);
+  }
+}
+
+/* ============================================================
+   Global button styles (can be used alongside Tailwind Button)
+   ============================================================ */
+
+.hz-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--hz-font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--hz-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.25s, transform 0.1s;
+}
+
+.hz-btn:active {
+  transform: translateY(1px);
+}
+
+.hz-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hz-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hz-btn-primary {
+  background: var(--hz-accent);
+  border-color: var(--hz-accent);
+  color: #04211a;
+}
+
+.hz-btn-primary:hover:not(:disabled) {
+  background: #6ff0cb;
+  box-shadow: 0 8px 26px -10px rgba(76, 224, 182, 0.55);
+  transform: translateY(-1px);
+}
+
+.hz-btn-outline {
+  background: rgba(76, 224, 182, 0.06);
+  border-color: rgba(76, 224, 182, 0.4);
+  color: var(--hz-accent);
+}
+
+.hz-btn-outline:hover:not(:disabled) {
+  background: rgba(76, 224, 182, 0.14);
+  border-color: var(--hz-accent);
+}
+
+.hz-btn-ghost {
+  background: transparent;
+  border-color: var(--hz-line);
+  color: var(--hz-ink-2);
+}
+
+.hz-btn-ghost:hover:not(:disabled) {
+  border-color: var(--hz-line-strong);
+  color: var(--hz-ink);
+}
+
+.hz-btn-sm {
+  padding: 0.55rem 0.875rem;
+  font-size: 0.64rem;
+}
+
+/* ============================================================
+   Global input styles
+   ============================================================ */
+
+.hz-input {
+  background: rgba(3, 8, 9, 0.6);
+  border: 1px solid var(--hz-line);
+  border-radius: var(--hz-radius-sm);
+  color: var(--hz-ink);
+  font-family: var(--hz-font-body);
+  font-size: 0.875rem;
+  padding: 0.625rem 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.hz-input:focus {
+  outline: none;
+  border-color: rgba(76, 224, 182, 0.45);
+  box-shadow: 0 0 0 3px rgba(76, 224, 182, 0.12);
+}
+
+.hz-input::placeholder {
+  color: rgba(233, 245, 242, 0.28);
+}
+
+.hz-select {
+  composes: hz-input;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0dccd' stroke-width='1.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
+.hz-textarea {
+  composes: hz-input;
+  font-family: var(--hz-font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ============================================================
+   Neon glow text — replaces solid highlight bars site-wide.
+   Transparent background, glowing colored text, thin tinted outline.
+   The tight 2px core keeps small text crisp and readable; the wider
+   low-alpha halos carry the glow without blurring letterforms.
+   Apply `hz-neon-*` alongside existing layout classes, on short labels
+   only — never on dim secondary text like taglines.
+   ============================================================ */
+
+.hz-neon-critical,
+.hz-neon-error {
+  background-color: transparent;
+  border-color: rgba(255, 107, 107, 0.45);
+  color: #ffa8a8;
+  text-shadow: 0 0 2px rgba(255, 168, 168, 0.95), 0 0 12px rgba(255, 107, 107, 0.5), 0 0 32px rgba(255, 107, 107, 0.28);
+}
+
+.hz-neon-high {
+  background-color: transparent;
+  border-color: rgba(255, 150, 80, 0.45);
+  color: #ffc08f;
+  text-shadow: 0 0 2px rgba(255, 192, 143, 0.95), 0 0 12px rgba(255, 150, 80, 0.5), 0 0 32px rgba(255, 150, 80, 0.28);
+}
+
+.hz-neon-medium,
+.hz-neon-warning {
+  background-color: transparent;
+  border-color: rgba(252, 211, 77, 0.45);
+  color: #ffe27a;
+  text-shadow: 0 0 2px rgba(255, 226, 122, 0.95), 0 0 12px rgba(252, 211, 77, 0.5), 0 0 32px rgba(252, 211, 77, 0.28);
+}
+
+.hz-neon-low,
+.hz-neon-success {
+  background-color: transparent;
+  border-color: rgba(76, 224, 182, 0.45);
+  color: #8ff5d6;
+  text-shadow: 0 0 2px rgba(143, 245, 214, 0.95), 0 0 12px rgba(76, 224, 182, 0.5), 0 0 32px rgba(76, 224, 182, 0.28);
+}
+
+.hz-neon-info {
+  background-color: transparent;
+  border-color: rgba(125, 211, 252, 0.45);
+  color: #a5e3ff;
+  text-shadow: 0 0 2px rgba(165, 227, 255, 0.95), 0 0 12px rgba(125, 211, 252, 0.5), 0 0 32px rgba(125, 211, 252, 0.28);
+}
+
+.hz-neon-violet {
+  background-color: transparent;
+  border-color: rgba(196, 141, 255, 0.45);
+  color: #d3a9ff;
+  text-shadow: 0 0 2px rgba(211, 169, 255, 0.95), 0 0 12px rgba(196, 141, 255, 0.5), 0 0 32px rgba(196, 141, 255, 0.28);
+}
+
+.hz-neon-default {
+  background-color: transparent;
+  border-color: rgba(203, 213, 225, 0.35);
+  color: #e2e8f0;
+  text-shadow: 0 0 2px rgba(226, 232, 240, 0.7), 0 0 12px rgba(203, 213, 225, 0.3);
+}
+
+/* ============================================================
+   Global badge / severity styles (neon glow text, no fills)
+   ============================================================ */
+
+.hz-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--hz-font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-color: transparent;
+}
+
+.hz-badge-LOW {
+  border-color: rgba(76, 224, 182, 0.45);
+  color: #8ff5d6;
+  text-shadow: 0 0 2px rgba(143, 245, 214, 0.95), 0 0 12px rgba(76, 224, 182, 0.5), 0 0 32px rgba(76, 224, 182, 0.28);
+}
+
+.hz-badge-MEDIUM {
+  border-color: rgba(252, 211, 77, 0.45);
+  color: #ffe27a;
+  text-shadow: 0 0 2px rgba(255, 226, 122, 0.95), 0 0 12px rgba(252, 211, 77, 0.5), 0 0 32px rgba(252, 211, 77, 0.28);
+}
+
+.hz-badge-HIGH {
+  border-color: rgba(255, 150, 80, 0.45);
+  color: #ffc08f;
+  text-shadow: 0 0 2px rgba(255, 192, 143, 0.95), 0 0 12px rgba(255, 150, 80, 0.5), 0 0 32px rgba(255, 150, 80, 0.28);
+}
+
+.hz-badge-CRITICAL {
+  border-color: rgba(255, 107, 107, 0.45);
+  color: #ffa8a8;
+  text-shadow: 0 0 2px rgba(255, 168, 168, 0.95), 0 0 12px rgba(255, 107, 107, 0.5), 0 0 32px rgba(255, 107, 107, 0.28);
+}
+
+.hz-badge-info {
+  border-color: rgba(125, 211, 252, 0.45);
+  color: #a5e3ff;
+  text-shadow: 0 0 2px rgba(165, 227, 255, 0.95), 0 0 12px rgba(125, 211, 252, 0.5), 0 0 32px rgba(125, 211, 252, 0.28);
+}
+
+.hz-badge-warning {
+  border-color: rgba(252, 211, 77, 0.45);
+  color: #ffe27a;
+  text-shadow: 0 0 2px rgba(255, 226, 122, 0.95), 0 0 12px rgba(252, 211, 77, 0.5), 0 0 32px rgba(252, 211, 77, 0.28);
+}
+
+.hz-badge-success {
+  border-color: rgba(76, 224, 182, 0.45);
+  color: #8ff5d6;
+  text-shadow: 0 0 2px rgba(143, 245, 214, 0.95), 0 0 12px rgba(76, 224, 182, 0.5), 0 0 32px rgba(76, 224, 182, 0.28);
+}
+
+.hz-badge-error {
+  border-color: rgba(255, 107, 107, 0.45);
+  color: #ffa8a8;
+  text-shadow: 0 0 2px rgba(255, 168, 168, 0.95), 0 0 12px rgba(255, 107, 107, 0.5), 0 0 32px rgba(255, 107, 107, 0.28);
+}
+
+/* Status badge variants */
+.hz-badge-detected {
+  border-color: rgba(125, 211, 252, 0.45);
+  color: #a5e3ff;
+  text-shadow: 0 0 2px rgba(165, 227, 255, 0.95), 0 0 12px rgba(125, 211, 252, 0.5), 0 0 32px rgba(125, 211, 252, 0.28);
+}
+
+.hz-badge-acknowledged {
+  border-color: rgba(252, 211, 77, 0.45);
+  color: #ffe27a;
+  text-shadow: 0 0 2px rgba(255, 226, 122, 0.95), 0 0 12px rgba(252, 211, 77, 0.5), 0 0 32px rgba(252, 211, 77, 0.28);
+}
+
+.hz-badge-resolved {
+  border-color: rgba(76, 224, 182, 0.45);
+  color: #8ff5d6;
+  text-shadow: 0 0 2px rgba(143, 245, 214, 0.95), 0 0 12px rgba(76, 224, 182, 0.5), 0 0 32px rgba(76, 224, 182, 0.28);
+}
+
+.hz-badge-open {
+  border-color: rgba(255, 150, 80, 0.45);
+  color: #ffc08f;
+  text-shadow: 0 0 2px rgba(255, 192, 143, 0.95), 0 0 12px rgba(255, 150, 80, 0.5), 0 0 32px rgba(255, 150, 80, 0.28);
+}
+
+.hz-badge-investigating {
+  border-color: rgba(252, 211, 77, 0.45);
+  color: #ffe27a;
+  text-shadow: 0 0 2px rgba(255, 226, 122, 0.95), 0 0 12px rgba(252, 211, 77, 0.5), 0 0 32px rgba(252, 211, 77, 0.28);
+}
+
+.hz-badge-closed {
+  border-color: rgba(76, 224, 182, 0.45);
+  color: #8ff5d6;
+  text-shadow: 0 0 2px rgba(143, 245, 214, 0.95), 0 0 12px rgba(76, 224, 182, 0.5), 0 0 32px rgba(76, 224, 182, 0.28);
+}
+
+/* ============================================================
+   Global scrollbar styling
+   ============================================================ */
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--hz-line);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--hz-line-strong);
+}
+
+/* ============================================================
+   Reduced motion — global
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

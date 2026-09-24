@@ -1,0 +1,832 @@
+/* ============================================================
+   HORUS command-console design language.
+   Shared by every internal application page (dashboard, events,
+   alerts, incidents, investigation, inject, threat lab).
+   Scoped under .hzc-* so landing (hz-*) and Tailwind utilities
+   keep working untouched.
+   Uses global design tokens from index.css (--hz-*) for consistency.
+   ============================================================ */
+
+.hzc-shell {
+  /* Inherits global tokens: --hz-bg-0, --hz-ink, --hz-accent, --hz-font-*, etc. */
+  position: relative;
+  min-height: 100vh;
+  color: var(--hz-ink);
+  font-family: var(--hz-font-body);
+  background: var(--hz-bg-0);
+}
+
+/* Subtle console background: faint rain canvas + vignette. */
+.hzc-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hzc-bg canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hzc-bg-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(2, 5, 6, 0.6) 100%),
+    linear-gradient(rgba(2, 5, 6, 0.4), transparent 20%, transparent 85%, rgba(2, 5, 6, 0.55));
+}
+
+.hzc-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------------- page header ---------------- */
+
+.hzc-page-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .hzc-page-head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.hzc-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--hz-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--hz-accent);
+  margin-bottom: 0.4rem;
+}
+
+.hzc-kicker::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--hz-accent);
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px rgba(76, 224, 182, 0.4);
+}
+
+.hzc-title {
+  font-family: var(--hz-font-display);
+  font-weight: 400;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  letter-spacing: 0.14em;
+  color: var(--hz-ink);
+  text-shadow: 0 0 28px rgba(76, 224, 182, 0.18);
+}
+
+.hzc-subtitle {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--hz-ink-3);
+}
+
+/* ---------------- console panel ---------------- */
+
+.hzc-panel {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid var(--hz-line);
+  background: rgba(8, 18, 20, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow:
+    0 24px 60px -30px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(233, 245, 242, 0.05);
+}
+
+.hzc-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--hz-line);
+}
+
+.hzc-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hz-ink);
+}
+
+.hzc-panel-title svg {
+  width: 14px;
+  height: 14px;
+  color: var(--hz-accent);
+}
+
+.hzc-panel-body {
+  padding: 1.1rem;
+}
+
+/* technical corner accents */
+.hzc-corners {
+  position: relative;
+}
+
+.hzc-corners > .hzc-corner {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 0 solid rgba(76, 224, 182, 0.55);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hzc-corners > .hzc-corner.tl { top: 7px; left: 7px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.hzc-corners > .hzc-corner.tr { top: 7px; right: 7px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.hzc-corners > .hzc-corner.bl { bottom: 7px; left: 7px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.hzc-corners > .hzc-corner.br { bottom: 7px; right: 7px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* ---------------- metric cells ---------------- */
+
+.hzc-metrics {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .hzc-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.hzc-metric {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--hz-line);
+  background: rgba(6, 13, 14, 0.6);
+  padding: 0.9rem 1rem;
+  transition: border-color 0.25s;
+}
+
+a.hzc-metric:hover {
+  border-color: rgba(76, 224, 182, 0.4);
+}
+
+.hzc-metric::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--hz-accent);
+  opacity: 0.55;
+}
+
+.hzc-metric-label {
+  font-family: var(--hz-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hz-ink-3);
+}
+
+.hzc-metric-value {
+  margin-top: 0.35rem;
+  font-family: var(--hz-font-mono);
+  font-size: 1.7rem;
+  line-height: 1.1;
+  color: var(--hz-ink);
+}
+
+.hzc-metric-sub {
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--hz-ink-3);
+}
+
+/* ---------------- severity meters (real values only) ---------------- */
+
+.hzc-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.72rem;
+}
+
+.hzc-meter-label {
+  width: 4.5rem;
+  flex: none;
+  font-family: var(--hz-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--hz-ink-3);
+}
+
+.hzc-meter-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(233, 245, 242, 0.08);
+  overflow: hidden;
+}
+
+.hzc-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.hzc-meter-count {
+  width: 2.5rem;
+  flex: none;
+  text-align: right;
+  font-family: var(--hz-font-mono);
+  color: var(--hz-ink);
+}
+
+.hzc-sev-LOW { background: #4ce0b6; box-shadow: 0 0 8px rgba(76, 224, 182, 0.45); }
+.hzc-sev-MEDIUM { background: #e5b04c; box-shadow: 0 0 8px rgba(229, 176, 76, 0.45); }
+.hzc-sev-HIGH { background: #ff9d5c; box-shadow: 0 0 8px rgba(255, 157, 92, 0.45); }
+.hzc-sev-CRITICAL { background: #ff6b6b; box-shadow: 0 0 10px rgba(255, 107, 107, 0.55); }
+
+.hzc-sevtext-LOW { color: #9be3c8; }
+.hzc-sevtext-MEDIUM { color: #e5b04c; }
+.hzc-sevtext-HIGH { color: #ff9d5c; }
+.hzc-sevtext-CRITICAL { color: #ff8f8f; }
+
+/* ---------------- telemetry table ---------------- */
+
+.hzc-table-wrap {
+  overflow-x: auto;
+  border-radius: 0 0 12px 12px;
+}
+
+.hzc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.hzc-table thead th {
+  position: sticky;
+  top: 0;
+  text-align: left;
+  font-family: var(--hz-font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hz-ink-3);
+  padding: 0.7rem 0.9rem;
+  background: rgba(4, 10, 11, 0.85);
+  border-bottom: 1px solid var(--hz-line);
+  white-space: nowrap;
+}
+
+.hzc-table tbody td {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid rgba(160, 220, 205, 0.07);
+  color: var(--hz-ink-2);
+  vertical-align: middle;
+}
+
+.hzc-table tbody tr {
+  transition: background 0.15s;
+}
+
+.hzc-table tbody tr:hover {
+  background: rgba(76, 224, 182, 0.05);
+}
+
+.hzc-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ---------------- filter bar / inputs inside console panels ---------------- */
+
+.hzc-panel input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.hzc-panel select,
+.hzc-panel textarea {
+  background: rgba(3, 8, 9, 0.6);
+  border: 1px solid var(--hz-line);
+  border-radius: 8px;
+  color: var(--hz-ink);
+}
+
+.hzc-panel input:focus,
+.hzc-panel select:focus,
+.hzc-panel textarea:focus {
+  outline: none;
+  border-color: rgba(76, 224, 182, 0.45);
+  box-shadow: 0 0 0 3px rgba(76, 224, 182, 0.12);
+}
+
+.hzc-panel select option {
+  background: #071114;
+}
+
+.hzc-field-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--hz-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hz-ink-3);
+}
+
+/* ---------------- status tabs (incidents) ---------------- */
+
+.hzc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hzc-tab {
+  appearance: none;
+  font-family: var(--hz-font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--hz-line);
+  background: transparent;
+  color: var(--hz-ink-3);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.hzc-tab:hover {
+  color: var(--hz-ink);
+  border-color: var(--hz-line-strong);
+}
+
+.hzc-tab[aria-selected="true"] {
+  color: var(--hz-accent);
+  border-color: rgba(76, 224, 182, 0.5);
+  background: rgba(76, 224, 182, 0.08);
+  box-shadow: inset 0 0 12px rgba(76, 224, 182, 0.08);
+}
+
+/* ---------------- console header (fixed top bar) ---------------- */
+
+.hz-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: var(--hz-header-h);
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  background: rgba(5, 12, 13, 0.84);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid var(--hz-line);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.hz-header:hover,
+.hz-header.scrolled {
+  background: rgba(5, 12, 13, 0.88);
+  box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.6);
+}
+
+.hz-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.hz-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--hz-ink);
+  transition: opacity 0.2s;
+}
+
+.hz-brand:hover {
+  opacity: 0.8;
+}
+
+/* Compact console eye mark — same cybernetic optic as the landing hero. */
+.hz-brand-eye {
+  width: 30px;
+  height: auto;
+  display: block;
+  flex: none;
+  filter: drop-shadow(0 0 6px rgba(76, 224, 182, 0.35));
+  transition: filter 0.25s;
+}
+
+.hz-brand:hover .hz-brand-eye {
+  filter: drop-shadow(0 0 10px rgba(76, 224, 182, 0.6));
+}
+
+.hz-brand-mark {
+  width: 28px;
+  height: auto;
+  fill: none;
+  stroke: rgba(233, 245, 242, 0.75);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.hz-brand-mark .hz-mark-iris {
+  fill: rgba(76, 224, 182, 0.2);
+  stroke: var(--hz-accent);
+  stroke-width: 5;
+}
+
+.hz-brand-mark .hz-mark-tear {
+  stroke: rgba(76, 224, 182, 0.55);
+}
+
+.hz-brand-name {
+  font-family: var(--hz-font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.28em;
+}
+
+.hz-brand-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--hz-ink-3);
+}
+
+.hz-nav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (min-width: 1024px) {
+  .hz-nav {
+    display: flex;
+  }
+}
+
+.hz-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--hz-radius-md);
+  font-family: var(--hz-font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--hz-ink-3);
+  transition: color 0.2s, background 0.2s;
+}
+
+.hz-nav-item:hover {
+  color: var(--hz-ink);
+  background: rgba(76, 224, 182, 0.06);
+}
+
+.hz-nav-item.hz-nav-item-active {
+  color: var(--hz-accent);
+  background: rgba(76, 224, 182, 0.1);
+}
+
+.hz-nav-item.hz-nav-item-active svg {
+  color: var(--hz-accent);
+}
+
+.hz-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.hz-health {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--hz-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hz-ink-3);
+  background: transparent;
+}
+
+.hz-health-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.hz-health-dot.hz-health-ok {
+  background: var(--hz-accent);
+  box-shadow: 0 0 10px rgba(76, 224, 182, 0.9);
+}
+
+.hz-health-dot.hz-health-warn {
+  background: var(--hz-amber);
+  box-shadow: 0 0 10px rgba(229, 176, 76, 0.8);
+}
+
+.hz-health-dot.hz-health-down {
+  background: var(--hz-danger);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+}
+
+/* Health label: neon glowing text, never a solid bar. Tight core keeps
+   the tiny mono label crisp. */
+.hz-health.hz-health-ok {
+  color: #8ff5d6;
+  text-shadow: 0 0 2px rgba(143, 245, 214, 0.95), 0 0 12px rgba(76, 224, 182, 0.5), 0 0 32px rgba(76, 224, 182, 0.28);
+}
+
+.hz-health.hz-health-warn {
+  color: #ffe27a;
+  text-shadow: 0 0 2px rgba(255, 226, 122, 0.95), 0 0 12px rgba(252, 211, 77, 0.5), 0 0 32px rgba(252, 211, 77, 0.28);
+}
+
+.hz-health.hz-health-down {
+  color: #ffa8a8;
+  text-shadow: 0 0 2px rgba(255, 168, 168, 0.95), 0 0 12px rgba(255, 107, 107, 0.5), 0 0 32px rgba(255, 107, 107, 0.28);
+}
+
+/* ---------------- mobile sidebar ---------------- */
+
+.hz-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 280px;
+  background: rgba(4, 9, 11, 0.98);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--hz-line);
+  transform: translateX(-100%);
+  transition: transform 0.3s var(--hz-ease);
+}
+
+.hz-sidebar.is-open {
+  transform: translateX(0);
+}
+
+.hz-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--hz-line);
+}
+
+.hz-sidebar-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--hz-line);
+  border-radius: var(--hz-radius-md);
+  color: var(--hz-ink-2);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.hz-sidebar-close:hover {
+  border-color: var(--hz-line-strong);
+  color: var(--hz-ink);
+}
+
+.hz-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+}
+
+.hz-sidebar-nav .hz-nav-item {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+
+.hz-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(2, 5, 6, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* ---------------- list rows (alerts / incidents on dashboard) ---------------- */
+
+.hzc-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  border: 1px solid var(--hz-line);
+  border-radius: 8px;
+  background: rgba(233, 245, 242, 0.02);
+  padding: 0.6rem 0.8rem;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+a.hzc-row:hover {
+  border-color: var(--hz-line-strong);
+  background: rgba(76, 224, 182, 0.05);
+}
+
+/* ---------------- main content ---------------- */
+
+.hzc-main {
+  padding-top: 0;
+}
+
+/* ---------------- timeline (investigation) ---------------- */
+
+.hzc-timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1.4rem;
+}
+
+.hzc-timeline::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: linear-gradient(rgba(76, 224, 182, 0.5), rgba(76, 224, 182, 0.08));
+}
+
+.hzc-timeline > li {
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.hzc-timeline > li:last-child {
+  padding-bottom: 0;
+}
+
+.hzc-timeline > li::before {
+  content: "";
+  position: absolute;
+  left: -1.4rem;
+  top: 4px;
+  width: 11px;
+  height: 11px;
+  margin-left: -5px;
+  border: 1px solid var(--hz-accent);
+  background: #071114;
+  transform: rotate(45deg);
+}
+
+.hzc-timeline-event::before {
+  border-color: rgba(160, 220, 205, 0.5) !important;
+  background: rgba(160, 220, 205, 0.15) !important;
+}
+
+/* ---------------- evidence chips ---------------- */
+
+.hzc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--hz-line-strong);
+  border-radius: 6px;
+  background: rgba(76, 224, 182, 0.07);
+  color: var(--hz-ink);
+  font-family: var(--hz-font-mono);
+  font-size: 0.68rem;
+  padding: 0.2rem 0.55rem;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+a.hzc-chip:hover {
+  border-color: var(--hz-accent);
+  background: rgba(76, 224, 182, 0.14);
+}
+
+.hzc-chip-warn {
+  border-color: rgba(229, 176, 76, 0.4);
+  background: rgba(229, 176, 76, 0.08);
+}
+
+.hzc-chip-dim {
+  border-color: var(--hz-line);
+  background: rgba(233, 245, 242, 0.04);
+  color: var(--hz-ink-2);
+}
+
+/* ---------------- misc console atoms ---------------- */
+
+.hzc-divider {
+  border: 0;
+  border-top: 1px solid var(--hz-line);
+}
+
+.hzc-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--hz-ink-3);
+}
+
+.hzc-error-box {
+  border: 1px solid rgba(255, 157, 133, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 107, 107, 0.07);
+  padding: 0.9rem 1rem;
+  font-size: 0.82rem;
+  color: #ffb3a3;
+}
+
+.hzc-section-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* never let tables break mobile layout */
+.hzc-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------------- fallbacks ---------------- */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hzc-header,
+  .hzc-sidebar,
+  .hzc-panel {
+    background: rgba(6, 13, 14, 0.94);
+  }
+}
+
+/* ---------------- responsive ---------------- */
+
+@media (max-width: 768px) {
+  .hzc-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .hzc-brand-sub {
+    display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  .hzc-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------------- reduced motion ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hzc-shell *,
+  .hzc-shell *::before,
+  .hzc-shell *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

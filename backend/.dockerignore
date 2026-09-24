@@ -1,0 +1,15 @@
+# Never bake local state, secrets, or caches into the image.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+.venv/
+venv/
+.env
+.env.local
+*.db
+*.db-journal
+*.sqlite*
+alembic/versions/__pycache__/
+tests/

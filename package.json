@@ -1,0 +1,17 @@
+{
+  "name": "horus",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"cd backend && ..\\.venv\\Scripts\\uvicorn.exe app.main:app --reload\" \"cd frontend && npm run dev\"",
+    "dev:backend": "cd backend && ..\\.venv\\Scripts\\uvicorn.exe app.main:app --reload",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
