@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
 from app.api.v1 import admin, alerts, correlation, detection, events, health, incidents, ingestion, investigate, investigation, rules, stats, threat_assessment
@@ -108,6 +109,17 @@ def create_app() -> FastAPI:
     configure_logging(settings.log_level)
 
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
+
+    # CORS: allow configured origins (comma-separated via env var)
+    cors_origins = [o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()]
+    logger.info("CORS allowed origins: %s", cors_origins)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.include_router(admin.router, prefix="/api/v1")
     app.include_router(health.router, prefix="/api/v1")
