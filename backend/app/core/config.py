@@ -32,7 +32,11 @@ class Settings(BaseSettings):
 
     # SQLite for M1 local dev. PostgreSQL-compatible: switching this URL
     # to e.g. postgresql+psycopg2://... requires no code changes.
+    # On Render, use /data/horus.db (writable, but ephemeral on free tier).
     database_url: str = "sqlite:///./horus.db"
+
+    # CORS allowed origins (comma-separated). Set via env var in production.
+    cors_allowed_origins: str = "http://localhost:5173,http://localhost:8080"
 
     # M6 AI Investigation (server-side only, never from API request)
     ai_provider: str = "disabled"  # disabled | gemini | groq | ollama | mock

@@ -22,12 +22,13 @@ COPY alembic/ ./alembic/
 ENV APP_NAME=Horus \
     APP_ENV=prod \
     LOG_LEVEL=INFO \
-    DATABASE_URL=sqlite:////data/horus.db
+    DATABASE_URL=sqlite:////data/horus.db \
+    PORT=8000
 
 EXPOSE 8000
 
 # in-container healthcheck needs no extra packages (stdlib urllib).
 HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
-  CMD python -c "import sys,urllib.request; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health', timeout=5).status == 200 else 1)"
+  CMD python -c "import sys,urllib.request,os; port=os.environ.get('PORT','8000'); sys.exit(0 if urllib.request.urlopen(f'http://localhost:{port}/api/v1/health', timeout=5).status == 200 else 1)"
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
