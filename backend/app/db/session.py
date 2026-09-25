@@ -32,7 +32,8 @@ if settings.database_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 elif settings.database_url.startswith("postgresql"):
     # Disable hstore adapter (Neon doesn't have hstore extension)
-    connect_args = {"options": "-c search_path=public", "use_native_hstore": False}
+    connect_args = {"options": "-c search_path=public"}
+    engine_kwargs["use_native_hstore"] = False
 
 engine = create_engine(
     settings.database_url,
